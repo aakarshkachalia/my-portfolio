@@ -19,7 +19,7 @@ my-portfolio/
 | What | Where |
 | --- | --- |
 | Case studies (title, blurb, problem/approach/outcome, links) | `PROJECTS` array at the top of `js/main.js` |
-| Page copy, awards, experience, contact | `index.html` |
+| Page copy — about, awards, experience, community, programs, contact | `index.html` |
 | Colours, type, spacing | `:root` variables at the top of `css/style.css` |
 | Images | see `img/README.md` |
 
@@ -49,8 +49,17 @@ Connect to Git:
 Cloudflare serves `index.html` at the root automatically. Every push to `main`
 redeploys.
 
+## Page order
+
+`01` Work · `02` About · `03` By the numbers · `04` Five worlds · `05` Awards ·
+`06` Skills · `07` Experience · `08` Community & service · `09` Programs &
+certifications · `10` Contact
+
 ## Still to add
 
 - `resume.pdf` in this folder — the "Résumé ↓" buttons link to `./resume.pdf`
-- Real project links — several entries in `PROJECTS` still have `href:"#"`
+- Real project links — every `href:"#"` in `PROJECTS`, especially the Spotify and
+  Apple Podcasts links for *AI for Young Minds* and the SolveFire link
 - Real screenshots in `img/`
+- Dates worth double-checking: the community/programs sections use the years given
+  for each program — fix any that are off
