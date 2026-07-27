@@ -246,7 +246,7 @@ const PROJECTS = [
     approach:"A podcast written and produced for a student audience: episodes that break down how these systems actually work, what they're good and bad at, and where the industry is heading — in language a 12-year-old can follow without being talked down to.",
     outcome:"Published on both Spotify and Apple Podcasts, building AI literacy and genuine interest in the field among students who'd otherwise only meet AI as a homework shortcut.",
     stack:["Writing","Audio production","AI literacy"],
-    links:[{label:"Spotify",href:"#"},{label:"Apple Podcasts",href:"#"}] },
+    links:[{label:"Spotify",href:"https://open.spotify.com/show/4VxIQAWIUq30C2uyIKbxgs"},{label:"Apple Podcasts",href:"https://podcasts.apple.com/us/podcast/ai-for-young-minds/id1805390678"}] },
   { num:"10", title:"SolveFire", kind:"Frontend · UI/UX design", year:"2025",
     blurb:"Designing the interface for a competitive math platform that ships new features constantly.",
     slot:"bcs-solvefire", slotHint:"Drop a UI screenshot",
@@ -254,7 +254,7 @@ const PROJECTS = [
     approach:"Frontend design work on SolveFire: UI and UX for a platform on a fast release cadence, which means designing systems and components that new features can slot into rather than one-off screens.",
     outcome:"Ongoing role — the design side of a live product with real users and frequent updates.",
     stack:["UI/UX","Frontend","Design systems"],
-    links:[{label:"SolveFire",href:"#"}] }
+    links:[{label:"SolveFire",href:"https://www.solvefire.net/"}] }
 ];
 
 class Component extends DCLogic {
