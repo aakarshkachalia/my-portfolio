@@ -272,6 +272,7 @@ const PROJECTS = [
     stack:["Ollama","Alpaca API","scikit-learn","pandas","Python"], links:[] },
   { num:"06", title:"Kinematyx", kind:"Robotics · inverse kinematics", year:"2025",
     blurb:"A desktop simulator that models a six-degree-of-freedom robotic arm, so you can drive a real industrial arm without owning one.",
+    img:"img/arm.png", fit:"contain",
     slot:"bcs-arm", slotHint:"Drop a simulator screenshot",
     problem:"A six-axis industrial arm costs more than most schools will ever spend, so the students most curious about robotics never get to touch the thing they want to learn. And the hard part isn't the hardware — it's the inverse kinematics, which you can absolutely learn on a screen.",
     approach:"A model of a 6DOF arm with a full inverse-kinematics solver: set a target position and orientation for the end effector and the simulator works backward to the joint angles, showing the arm move through the solution rather than just reporting numbers.",
