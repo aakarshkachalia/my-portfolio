@@ -15,7 +15,22 @@
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
   window.__e = e;
 
-  /* ---------- image-slot: click or drop a local image, remembered per browser ---------- */
+  /* ---------- authoring mode ----------
+     Dropping a photo into a slot only ever writes to the browser doing the
+     dropping — it cannot change the deployed site for anyone else. But a
+     visitor shouldn't be offered a file picker at all, so the upload UI is
+     gated: it appears when you're working locally, or when you add ?edit to
+     the URL. Everyone else sees a plain panel with nothing to click.
+
+     This hides an affordance; it is not a security boundary, and it doesn't
+     need to be — there's nothing on the other side of it to protect. Real
+     images ship as files in img/, referenced with src="img/whatever.jpg". */
+  var EDIT = location.protocol === 'file:'
+          || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)
+          || /[?&]edit(=1|&|$)/.test(location.search);
+  window.__EDIT = EDIT;
+
+  /* ---------- image-slot ---------- */
   class ImageSlot extends HTMLElement {
     connectedCallback(){
       if (this._init) return; this._init = true;
@@ -24,32 +39,51 @@
       var fit = this.getAttribute('fit') || 'cover';
       var key = 'imgslot:' + id;
       var self = this;
-      var input = document.createElement('input');
-      input.type = 'file'; input.accept = 'image/*';
 
-      function paint(src){
+      function paint(src, local){
         if (src) {
-          self.innerHTML = '<img alt="" style="width:100%;height:100%;object-fit:' + fit + '">';
-          self.querySelector('img').src = src;
-        } else {
+          self.innerHTML = '<img alt="" style="width:100%;height:100%;object-fit:' + fit + '">'
+            + (local ? '<span style="position:absolute;left:0;bottom:0;padding:.3rem .6rem;'
+                + 'font-family:var(--f-m);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;'
+                + 'background:var(--acc2);color:#fff">Local preview — not published</span>' : '');
+          var img = self.querySelector('img');
+          /* a src pointing at a file that isn't there yet falls back to the
+             empty panel rather than showing a broken-image icon */
+          img.onerror = function(){ paint(null); };
+          img.src = src;
+        } else if (EDIT) {
           self.innerHTML = '<div style="position:absolute;inset:0;display:flex;flex-direction:column;gap:.45rem;'
             + 'align-items:center;justify-content:center;text-align:center;font-family:var(--f-m);font-size:.64rem;'
             + 'letter-spacing:.1em;text-transform:uppercase;color:var(--fnt);border:1px dashed var(--line);border-radius:4px">'
             + '<span style="font-size:1.2rem;line-height:1">+</span><span>' + e(ph) + '</span></div>';
+        } else {
+          self.innerHTML = '';   /* visitors get a quiet empty panel */
         }
       }
-      function load(file){
-        if (!file || !/^image\//.test(file.type)) return;
-        var r = new FileReader();
-        r.onload = function(){ paint(r.result); try { localStorage.setItem(key, r.result); } catch (err) {} };
-        r.readAsDataURL(file);
-      }
-      /* A committed file in img/ wins (src="img/whatever.jpg"); otherwise fall
-         back to whatever was dropped in on this browser. */
-      var file = this.getAttribute('src');
-      var saved = null; try { saved = localStorage.getItem(key); } catch (err) {}
-      paint(file || saved);
 
+      /* A committed file in img/ is the real image and always wins. A
+         locally-dropped preview is only ever read back in edit mode. */
+      var file = this.getAttribute('src');
+      var saved = null;
+      if (EDIT && !file) { try { saved = localStorage.getItem(key); } catch (err) {} }
+      paint(file || saved, !file && !!saved);
+
+      if (!EDIT || file) return;   /* nothing else to wire up */
+
+      this.setAttribute('data-editable', '');
+      this.style.cursor = 'pointer';
+      var input = document.createElement('input');
+      input.type = 'file'; input.accept = 'image/*';
+
+      function load(f){
+        if (!f || !/^image\//.test(f.type)) return;
+        var r = new FileReader();
+        r.onload = function(){
+          paint(r.result, true);
+          try { localStorage.setItem(key, r.result); } catch (err) {}
+        };
+        r.readAsDataURL(f);
+      }
       this.addEventListener('click', function(){ input.click(); });
       input.addEventListener('change', function(){ load(input.files[0]); });
       this.addEventListener('dragover', function(ev){ ev.preventDefault(); self.style.outline = '2px solid var(--acc)'; });
@@ -61,6 +95,17 @@
     }
   }
   if (!customElements.get('image-slot')) customElements.define('image-slot', ImageSlot);
+
+  /* a quiet reminder that what you're seeing isn't what visitors see */
+  if (EDIT) addEventListener('DOMContentLoaded', function(){
+    var b = document.createElement('div');
+    b.textContent = 'Edit mode — drops are local to this browser';
+    b.style.cssText = 'position:fixed;left:1rem;bottom:1rem;z-index:9998;padding:.4rem .8rem;'
+      + 'border:1px solid var(--line);border-radius:3px;background:var(--bg2);color:var(--fnt);'
+      + 'font-family:var(--f-m);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;'
+      + 'pointer-events:none;opacity:.75';
+    document.body.appendChild(b);
+  });
 
   /* ---------- style-hover="..." attribute support ---------- */
   function bindHovers(scope){
@@ -77,7 +122,7 @@
   /* ---------- cursor hover targets (re-bindable for dynamic nodes) ---------- */
   function bindCursorTargets(scope, dot, ring){
     if (!dot || !ring) return;
-    (scope || document).querySelectorAll('a,button,input,textarea,[data-award],image-slot').forEach(function(el){
+    (scope || document).querySelectorAll('a,button,input,textarea,[data-award],image-slot[data-editable]').forEach(function(el){
       if (el.__cur) return; el.__cur = true;
       el.addEventListener('pointerenter', function(){
         dot.style.width = '10px'; dot.style.height = '10px'; dot.style.background = 'var(--acc)';
@@ -112,7 +157,7 @@
           <h3 style="font-family:var(--f-d);font-size:clamp(2.2rem,4.6vw,3.4rem);letter-spacing:-.025em">${e(sel.title)}</h3>
           <p style="color:var(--mut);margin-top:.7rem;font-size:1.05rem;line-height:1.7;max-width:62ch;text-wrap:pretty">${e(sel.blurb)}</p>
           <div style="position:relative;margin-top:1.6rem;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--bg3);aspect-ratio:16/9">
-            <image-slot id="${e(sel.slot)}" src="${e(sel.img || '')}" shape="rect" fit="cover" placeholder="${e(sel.slotHint)}"></image-slot>
+            <image-slot id="${e(sel.slot)}" src="${e(sel.img || '')}" shape="rect" fit="${e(sel.fit || 'cover')}" placeholder="${e(sel.slotHint)}"></image-slot>
           </div>
           <div data-cols style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:1.8rem">
             <div style="background:var(--bg2);padding:1.2rem 1.2rem 1.4rem">
@@ -182,73 +227,59 @@
 const PROJECTS = [
   { num:"01", title:"MathFlow", kind:"FBLA Website Design", year:"2025",
     blurb:"An AI math coach that finds a student's weak spots and rebuilds them with guided, step-by-step practice.",
+    img:"img/mathflow.png",
     slot:"bcs-mathflow", slotHint:"Drop a MathFlow screenshot",
     problem:"Students who fall behind in math rarely know which specific skill broke first — they just know the whole unit feels impossible. Generic practice sets don't diagnose anything.",
     approach:"A hand-rolled front end on top of the Google Gemini API: it reads a student's wrong answers, infers the underlying gap, and generates a guided path back through it. Plain JavaScript, HTML, and Tailwind so every interaction stayed fast.",
     outcome:"Carried a full competition package — site, documentation, live demo — to a top-10 finish at FBLA North Carolina states, against a field of 1,000+ students.",
     stack:["Google Gemini","JavaScript","Tailwind","HTML"],
-    links:[{label:"Live demo",href:"#"},{label:"GitHub",href:"#"}] },
-  { num:"02", title:"TundraScout", kind:"Native iOS · App Store", year:"2024",
+    links:[{label:"Live demo",href:"https://aakarshkwebsitedesign.wasmer.app/"},{label:"GitHub",href:"https://github.com/aakarshkachalia/WebsiteDesignFBLA25-26"}] },
+  { num:"02", title:"FTC Scouting Companion", kind:"Native iOS · App Store", year:"2024",
     blurb:"The unofficial FTC scouting app — match data, team analytics, and offline-first storage in a clean SwiftUI interface, shipped to the App Store.",
+    img:"img/tundrascout.png", fit:"contain",
     slot:"bcs-tundrascout", slotHint:"Drop a TundraScout screenshot",
-    problem:"FTC scouting happens in gyms with no usable Wi-Fi, on a stopwatch, between matches. Spreadsheets and paper both fail under that pressure.",
+    problem:"FTC scouting happens in gyms of schools with no usable Wi-Fi, on a stopwatch, between matches. Spreadsheets and paper both fail under that pressure.",
     approach:"A native SwiftUI app with Core Data underneath so every entry works fully offline and syncs later. Match entry is two taps deep; analytics roll up automatically so a drive team can make an alliance call in seconds.",
     outcome:"Designed, built, and published to the App Store as sole developer, then marketed it to other FTC teams as an unofficial scouting tool. Now on a yearly release cycle — each season's feedback becomes the next version's features.",
     stack:["SwiftUI","Core Data","iOS"],
-    links:[{label:"App Store",href:"#"}] },
+    links:[{label:"App Store",href:"https://apps.apple.com/us/app/ftc-scouting-companion/id6754262563"}] },
   { num:"03", title:"AI Carbon Footprint Tracker", kind:"Research · NYAS", year:"2025",
     blurb:"A tool that quantifies the energy and emissions cost of AI workloads, grounded in peer-reviewed data.",
+    img:"img/carbon.png", fit:"contain",
     slot:"bcs-carbon", slotHint:"Drop a dashboard screenshot",
     problem:"Everyone talks about the cost of AI compute; almost nobody can put a number on a specific workload. The data exists but sits scattered across papers.",
     approach:"A Streamlit application that models energy draw and grid emissions per workload, with interactive D3.js visualizations, built entirely on peer-reviewed figures rather than vendor estimates.",
     outcome:"Presented as part of a New York Academy of Sciences research program, and became the foundation for the CarbonCast scheduling concept.",
     stack:["Python","Streamlit","D3.js"],
-    links:[{label:"Read more",href:"#"}] },
-  { num:"04", title:"CarbonCast", kind:"Research concept · ML systems", year:"2025",
-    blurb:"Carbon-aware inference scheduling that shifts LLM compute toward cleaner grid windows.",
-    slot:"bcs-carboncast", slotHint:"Drop a diagram or chart",
-    problem:"Inference emissions depend as much on when a request runs as on how big the model is — the grid is far dirtier at 6pm than at 3am.",
-    approach:"A scheduling layer that forecasts grid carbon intensity and defers latency-tolerant inference into cleaner windows — no retraining, no quantization, no change to the model itself.",
-    outcome:"An in-progress research concept: the mechanism is specified and the emissions model is built; next is a measured benchmark against a live grid feed.",
-    stack:["Research","ML systems","Sustainability"], links:[] },
-  { num:"05", title:"Quantum experiments", kind:"Stanford · Qiskit", year:"2025",
-    blurb:"Bell states, GHZ states, and quantum teleportation — implemented and verified on simulators.",
-    slot:"bcs-quantum", slotHint:"Drop a circuit diagram",
-    problem:"Quantum computing is easy to read about and hard to believe until you've watched entanglement show up in your own measurement statistics.",
-    approach:"Built Bell and GHZ state circuits and a full teleportation protocol in Qiskit, verifying each against expected distributions, then connected gate-level behaviour to higher-level algorithms.",
-    outcome:"Completed the Stanford Quantum High School Program's full problem set and capstone exercises.",
-    stack:["Qiskit","Python"], links:[] },
-  { num:"06", title:"Agentic trading research", kind:"NC State · finance AI", year:"2025",
-    blurb:"A local-LLM trading agent on the Alpaca API, and research into whether language models just agree with whatever the market already did.",
-    slot:"bcs-stock", slotHint:"Drop a results chart",
-    problem:"Two problems, one project. First: can an LLM agent actually reason about a portfolio, or is it just generating plausible-sounding trades? Second, and more interesting: LLMs are trained to be agreeable — so when a stock overshoots and you ask the model about it, does it push back, or does it rationalize the move it was just shown?",
-    approach:"An agent running on Ollama locally, wired to the Alpaca API for paper trading, with a pandas feature pipeline and logistic-regression and random-forest baselines to check the agent against. The agreeability work probes the same model with overshoot scenarios framed different ways and measures how far its answer moves with the framing rather than with the data.",
-    outcome:"Ongoing research at NC State. The agent trades on paper against real market data, and the early agreeability finding is the uncomfortable one: framing moves the model's read of an overshoot more than the underlying numbers do.",
-    stack:["Ollama","Alpaca API","scikit-learn","pandas","Python"], links:[] },
-  { num:"07", title:"Competition robots", kind:"FTC 7083 · seven seasons", year:"2018—25",
-    blurb:"Seven seasons of FIRST robotics — mechanical design, Java/Python control code, and systems thinking.",
-    slot:"bcs-robots", slotHint:"Drop a robot photo",
-    problem:"Every FTC season is a new game with a fixed six-week build window and a robot that has to survive being driven by humans under pressure.",
-    approach:"Seven seasons with Team 7083 TundraBots — starting on LEGO and Technic bricks in 1st grade and now leading the software side as Software Development Captain since 7th grade. Mechanical design iterations, autonomous and tele-op control code in Java and Python, and the documentation discipline judges actually read.",
-    outcome:"Earned the NC State Championship Inspire Award — FTC's highest all-around honor, given for excellence across engineering, documentation, and outreach. Outside competition: outreach events across North Carolina and building robotics kits for students in rural districts who don't have a team to join.",
-    stack:["Java","Python","FTC SDK"], links:[] },
-  { num:"08", title:"6DOF Arm Simulator", kind:"Robotics · inverse kinematics", year:"2025",
-    blurb:"A desktop simulator that models a six-degree-of-freedom robotic arm, so you can drive a real industrial arm without owning one.",
-    slot:"bcs-arm", slotHint:"Drop a simulator screenshot",
-    problem:"A six-axis industrial arm costs more than most schools will ever spend, so the students most curious about robotics never get to touch the thing they want to learn. And the hard part isn't the hardware — it's the inverse kinematics, which you can absolutely learn on a screen.",
-    approach:"A model of a 6DOF arm with a full inverse-kinematics solver: set a target position and orientation for the end effector and the simulator works backward to the joint angles, showing the arm move through the solution rather than just reporting numbers.",
-    outcome:"Used by students to learn arm kinematics without hardware, and by industry-minded users to mock up a real arm's reach and motion on a laptop before committing to it.",
-    stack:["Python","Inverse kinematics","3D modeling"], links:[] },
-  { num:"09", title:"AI for Young Minds", kind:"Podcast · Spotify & Apple", year:"2025",
+    links:[{label:"Live demo",href:"https://nyas-ai-carbon-tracker.wasmer.app/"},
+           {label:"GitHub",href:"https://github.com/aakarshkachalia/NYAS-AI-Carbon-Tracker"}] },
+  { num:"04", title:"AI for Young Minds", kind:"Podcast · Spotify & Apple", year:"2025",
     blurb:"A podcast making AI literacy real for middle and high schoolers — on Spotify and Apple Podcasts.",
+    img:"img/podcast.png", fit:"contain",
     slot:"bcs-podcast", slotHint:"Drop cover art or a waveform",
     problem:"Students my age are handed AI tools constantly and taught almost nothing about how they work, what they cost, or where they fail. The available explanations are either research papers or marketing.",
     approach:"A podcast written and produced for a student audience: episodes that break down how these systems actually work, what they're good and bad at, and where the industry is heading — in language a 12-year-old can follow without being talked down to.",
     outcome:"Published on both Spotify and Apple Podcasts, building AI literacy and genuine interest in the field among students who'd otherwise only meet AI as a homework shortcut.",
     stack:["Writing","Audio production","AI literacy"],
     links:[{label:"Spotify",href:"https://open.spotify.com/show/4VxIQAWIUq30C2uyIKbxgs"},{label:"Apple Podcasts",href:"https://podcasts.apple.com/us/podcast/ai-for-young-minds/id1805390678"}] },
-  { num:"10", title:"SolveFire", kind:"Frontend · UI/UX design", year:"2025",
+  { num:"05", title:"Agentic trading research", kind:"NC State · finance AI", year:"2025",
+    blurb:"A local-LLM trading agent on the Alpaca API, and research into whether language models just agree with whatever the market already did.",
+    img:"img/trading.png", fit:"contain",
+    slot:"bcs-stock", slotHint:"Drop a results chart",
+    problem:"Two problems, one project. First: can an LLM agent actually reason about a portfolio, or is it just generating plausible-sounding trades? Second, and more interesting: LLMs are trained to be agreeable — so when a stock overshoots and you ask the model about it, does it push back, or does it rationalize the move it was just shown?",
+    approach:"An agent running on Ollama locally, wired to the Alpaca API for paper trading, with a pandas feature pipeline and logistic-regression and random-forest baselines to check the agent against. The agreeability work probes the same model with overshoot scenarios framed different ways and measures how far its answer moves with the framing rather than with the data.",
+    outcome:"Ongoing research at NC State. The agent trades on paper against real market data, and the early agreeability finding is the uncomfortable one: framing moves the model's read of an overshoot more than the underlying numbers do.",
+    stack:["Ollama","Alpaca API","scikit-learn","pandas","Python"], links:[] },
+  { num:"06", title:"Kinematyx", kind:"Robotics · inverse kinematics", year:"2025",
+    blurb:"A desktop simulator that models a six-degree-of-freedom robotic arm, so you can drive a real industrial arm without owning one.",
+    slot:"bcs-arm", slotHint:"Drop a simulator screenshot",
+    problem:"A six-axis industrial arm costs more than most schools will ever spend, so the students most curious about robotics never get to touch the thing they want to learn. And the hard part isn't the hardware — it's the inverse kinematics, which you can absolutely learn on a screen.",
+    approach:"A model of a 6DOF arm with a full inverse-kinematics solver: set a target position and orientation for the end effector and the simulator works backward to the joint angles, showing the arm move through the solution rather than just reporting numbers.",
+    outcome:"Used by students to learn arm kinematics without hardware, and by industry-minded users to mock up a real arm's reach and motion on a laptop before committing to it.",
+    stack:["Python","Inverse kinematics","3D modeling"], links:[] },
+  { num:"07", title:"SolveFire", kind:"Frontend · UI/UX design", year:"2025",
     blurb:"Designing the interface for a competitive math platform that ships new features constantly.",
+    img:"img/solvefire.png", fit:"contain",
     slot:"bcs-solvefire", slotHint:"Drop a UI screenshot",
     problem:"Competitive math sites are usually built by mathematicians, and it shows — dense, unfriendly interfaces that add difficulty on top of problems that are already hard enough.",
     approach:"Frontend design work on SolveFire: UI and UX for a platform on a fast release cadence, which means designing systems and components that new features can slot into rather than one-off screens.",
@@ -402,7 +433,7 @@ class Component extends DCLogic {
         copy.style.borderColor = "var(--sig)"; copy.style.color = "var(--sig)";
         setTimeout(() => { label.textContent = "Copy email"; copy.style.borderColor = "var(--line)"; copy.style.color = "var(--mut)"; }, 1800);
       };
-      if (navigator.clipboard) navigator.clipboard.writeText("aakik2011@gmail.com").then(done, done); else done();
+      if (navigator.clipboard) navigator.clipboard.writeText("aakarsh.kachalia10@gmail.com").then(done, done); else done();
     });
     const clock = r.querySelector("[data-clock]");
     if (clock) {
@@ -410,7 +441,7 @@ class Component extends DCLogic {
       const tick = () => {
         try {
           const t = new Date().toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" });
-          clock.innerHTML = dot + "It's " + t + " for me in Cary, NC — usually replies within a day";
+          clock.innerHTML = dot + "It's " + t + " for me in Cary, NC";
         } catch (e) {}
       };
       tick(); this.clockT = setInterval(tick, 20000);

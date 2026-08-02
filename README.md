@@ -26,6 +26,19 @@ my-portfolio/
 Dark mode is the `html[data-th="dark"]` block in `style.css`; the moon/sun button in
 the nav toggles it.
 
+## Who can change what
+
+Everything on this site is a static file. There is no database, no admin panel,
+and no upload endpoint — a visitor's browser can only read what you published, so
+there is nothing for anyone to change. Editing the site means editing these files
+and pushing.
+
+The image slots have a drop-an-image affordance for mocking things up. It's hidden
+from visitors and only appears in **edit mode**: automatically on localhost or when
+opening the file directly, and on the live site by adding `?edit` to the URL. Even
+then, a dropped image is stored only in that one browser (`localStorage`) and is
+labelled "not published". Real images ship as files in `img/`.
+
 ## Running it locally
 
 Open `index.html` in a browser, or serve the folder:
