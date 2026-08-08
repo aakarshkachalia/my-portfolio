@@ -722,21 +722,37 @@ class Component extends DCLogic {
         })
       }));
       screen.position.z = .16; body.add(screen); g.add(body);
-      const tile = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.4, .22), new THREE.MeshStandardMaterial({
-        roughness: .35, metalness: .1, map: tex((x, S) => {
-          const gr = x.createLinearGradient(0, 0, S, S); gr.addColorStop(0, "#3b6bf5"); gr.addColorStop(1, "#12275f");
-          x.fillStyle = gr; x.fillRect(0, 0, S, S);
-          x.fillStyle = "#fff"; x.font = "400 128px Georgia, serif"; x.textAlign = "center"; x.textBaseline = "middle";
-          x.fillText("AK", S / 2, S / 2 + 8);
-        })
-      }));
-      g.add(tile); g.scale.setScalar(.9);
+
+      /* the two shipped apps orbit the phone: real screenshots, sized to their
+         own aspect ratio so neither one gets squashed */
+      const loader = new THREE.TextureLoader();
+      const shot = (url, w, h) => {
+        const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, .12), new THREE.MeshStandardMaterial({
+          color: 0xffffff, roughness: .4, metalness: .05
+        }));
+        loader.load(url, t2 => {
+          t2.colorSpace = THREE.SRGBColorSpace;
+          m.material.map = t2; m.material.needsUpdate = true;
+        });
+        g.add(m);
+        return m;
+      };
+      const tiles = [
+        shot("img/tundrascout.png", 1.9, .96),   /* FTC Scouting Companion, 943x478 */
+        shot("img/arm.png", 1.75, 1.11)          /* Kinematyx, 1149x729 */
+      ];
+
+      g.scale.setScalar(.9);
       return { update: t => {
         body.rotation.y = Math.sin(t * .35) * .5 + .25;
         body.rotation.x = Math.sin(t * .25) * .08;
-        const a = t * .65;
-        tile.position.set(Math.cos(a) * 2.3, Math.sin(a * .8) * 1.1, Math.sin(a) * 2.3);
-        tile.rotation.y = -t * .9; tile.rotation.x = t * .4;
+        tiles.forEach((tile, i) => {
+          const a = t * .55 + i * Math.PI;          /* opposite sides of the orbit */
+          const lift = i ? -1 : 1;
+          tile.position.set(Math.cos(a) * 2.5, Math.sin(a * .8) * 1.15 * lift, Math.sin(a) * 2.5);
+          tile.rotation.y = -a;                     /* keep the face turned outward */
+          tile.rotation.z = Math.sin(t * .5 + i) * .12;
+        });
       } };
     });
 
