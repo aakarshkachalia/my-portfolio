@@ -135,13 +135,48 @@
     });
   }
 
+
+  /* ---------- badge marks ----------
+     Simple geometric glyphs drawn inline, not third-party brand logos: the
+     official marks are trademarked and would need the real asset files.
+     Each badge pairs a glyph with the platform name in text. */
+  var ICONS = {
+    web:   '<circle cx="8" cy="8" r="6.2"/><path d="M1.8 8h12.4M8 1.8c1.9 2 1.9 10.4 0 12.4M8 1.8c-1.9 2-1.9 10.4 0 12.4"/>',
+    apple: '<rect x="2.2" y="1.6" width="11.6" height="12.8" rx="3"/><path d="M8 5.6v4.8M5.9 7.7l2.1-2.1 2.1 2.1"/>',
+    atom:  '<circle cx="8" cy="8" r="1.7"/><ellipse cx="8" cy="8" rx="6.3" ry="2.6"/><ellipse cx="8" cy="8" rx="6.3" ry="2.6" transform="rotate(60 8 8)"/><ellipse cx="8" cy="8" rx="6.3" ry="2.6" transform="rotate(120 8 8)"/>',
+    mic:   '<rect x="6" y="1.7" width="4" height="7.6" rx="2"/><path d="M3.6 7.6a4.4 4.4 0 0 0 8.8 0M8 12v2.3M5.9 14.3h4.2"/>',
+    trophy:'<path d="M4.6 2.2h6.8v3.4a3.4 3.4 0 0 1-6.8 0z"/><path d="M4.6 3.3H2.4v1.1a2.6 2.6 0 0 0 2.2 2.5M11.4 3.3h2.2v1.1a2.6 2.6 0 0 1-2.2 2.5M8 9v2.6M5.7 13.8h4.6"/>',
+    chart: '<path d="M2 13.6h12M4.2 11V6.6M7.4 11V3.2M10.6 11V8.2M13 11V5"/>',
+    llama: '<path d="M5.2 14V8.2c0-2 1.2-3.4 3-3.4h1.2V2.6l2.6 2.1-2.6 2.1V5.9H8.4c-1 0-1.6.8-1.6 2V14z"/><circle cx="11.2" cy="4.7" r=".7"/>',
+    gear:  '<circle cx="8" cy="8" r="2.4"/><path d="M8 1.6v2M8 12.4v2M14.4 8h-2M3.6 8h-2M12.5 3.5l-1.4 1.4M4.9 11.1l-1.4 1.4M12.5 12.5l-1.4-1.4M4.9 4.9L3.5 3.5"/>',
+    flame: '<path d="M8 1.6s3.9 3 3.9 6.6a3.9 3.9 0 0 1-7.8 0C4.1 6.5 6 5.4 6 5.4s.2 1.7 1.1 1.7c1 0 .9-2.9.9-5.5z"/>'
+  };
+  function badgeHTML(b){
+    var g = ICONS[b.icon] || ICONS.web;
+    var col = b.win ? 'var(--sig)' : 'var(--mut)';
+    var bd  = b.win ? 'var(--sig)' : 'var(--line)';
+    return '<span style="display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .65rem;border-radius:3px;'
+      + 'border:1px solid ' + bd + ';color:' + col + ';font-family:var(--f-m);font-size:.6rem;letter-spacing:.1em;'
+      + 'text-transform:uppercase;white-space:nowrap' + (b.win ? ';background:rgba(19,122,75,.1)' : '') + '">'
+      + '<svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.3" '
+      + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0">' + g + '</svg>'
+      + e(b.label) + '</span>';
+  }
+  function badgeRow(list, gap){
+    if (!list || !list.length) return '';
+    return '<span style="display:flex;flex-wrap:wrap;gap:.35rem;margin-top:' + gap + '">'
+      + list.map(badgeHTML).join('') + '</span>';
+  }
+
   /* ---------- templates ---------- */
-  function cardHTML(p, k){ return `            <button type="button" data-open="${k}" style="display:flex;flex-direction:column;align-items:stretch;text-align:left;background:var(--bg2);padding:1.6rem 1.5rem 1.4rem;min-height:250px;transition:background .3s,transform .35s cubic-bezier(.16,1,.3,1)" style-hover="background:var(--bg3);transform:translateY(-3px)">
+  function cardHTML(p, k){ return `            <button type="button" data-open="${k}" style="display:flex;flex-direction:column;align-items:stretch;text-align:left;background:var(--bg2);padding:1.6rem 1.5rem 1.4rem;min-height:310px;transition:background .3s,transform .35s cubic-bezier(.16,1,.3,1)" style-hover="background:var(--bg3);transform:translateY(-3px)">
               <span style="display:flex;justify-content:space-between;align-items:baseline;gap:1rem;font-family:var(--f-m);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--fnt);padding-bottom:1rem;border-bottom:1px solid var(--line2)">
                 <span style="color:var(--acc)">${e(p.num)} / ${e(p.kind)}</span><span>${e(p.year)}</span>
               </span>
               <span style="display:block;font-family:var(--f-d);font-size:clamp(1.6rem,2.6vw,2.15rem);letter-spacing:-.02em;line-height:1.08;margin-top:1.1rem">${e(p.title)}</span>
-              <span style="display:block;color:var(--mut);font-size:.92rem;margin-top:.6rem;line-height:1.6;flex:1">${e(p.blurb)}</span>
+              <span style="display:block;font-family:var(--f-m);font-weight:600;font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--acc);margin-top:.55rem">${e(p.role)}</span>
+              ${badgeRow(p.badges, '.7rem')}
+              <span style="display:block;color:var(--mut);font-size:.92rem;margin-top:.75rem;line-height:1.6;flex:1">${e(p.blurb)}</span>
               <span style="display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1.3rem;font-family:var(--f-m);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)">
                 <span>${e(p.stackLine)}</span><span aria-hidden="true">↗</span>
               </span>
@@ -155,9 +190,26 @@
         </div>
         <div style="padding:clamp(1.4rem,3vw,2.4rem) clamp(1.2rem,3vw,2rem) 2.6rem">
           <h3 style="font-family:var(--f-d);font-size:clamp(2.2rem,4.6vw,3.4rem);letter-spacing:-.025em">${e(sel.title)}</h3>
-          <p style="color:var(--mut);margin-top:.7rem;font-size:1.05rem;line-height:1.7;max-width:62ch;text-wrap:pretty">${e(sel.blurb)}</p>
-          <div style="position:relative;margin-top:1.6rem;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--bg3);aspect-ratio:16/9">
-            <image-slot id="${e(sel.slot)}" src="${e(sel.img || '')}" shape="rect" fit="${e(sel.fit || 'cover')}" placeholder="${e(sel.slotHint)}"></image-slot>
+          <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-top:.6rem">
+            <span style="font-family:var(--f-m);font-weight:600;font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;color:var(--acc)">${e(sel.role)}</span>
+            ${sel.badges && sel.badges.length ? `<span style="width:1px;height:14px;background:var(--line)"></span>${badgeRow(sel.badges,'0')}` : ''}
+          </div>
+          <p style="color:var(--mut);margin-top:.9rem;font-size:1.05rem;line-height:1.7;max-width:62ch;text-wrap:pretty">${e(sel.blurb)}</p>
+          <div data-cols style="display:grid;grid-template-columns:${sel.feature ? '1.15fr .85fr' : '1fr'};gap:1rem;margin-top:1.6rem;align-items:stretch">
+            <div style="position:relative;min-width:0;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--bg3);${sel.feature ? 'min-height:210px' : 'aspect-ratio:16/9'}">
+              <image-slot id="${e(sel.slot)}" src="${e(sel.img || '')}" shape="rect" fit="${e(sel.fit || 'cover')}" placeholder="${e(sel.slotHint)}"></image-slot>
+            </div>
+            ${sel.feature ? `<figure style="display:flex;flex-direction:column;min-width:0;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--bg)">
+              <span style="display:flex;align-items:center;gap:.45rem;padding:.6rem .8rem;border-bottom:1px solid var(--line);font-family:var(--f-m);font-size:.58rem;letter-spacing:.13em;text-transform:uppercase;color:var(--sig)">
+                <span style="width:5px;height:5px;border-radius:50%;background:var(--sig);flex-shrink:0"></span>Featured by ${e(sel.feature.source)}
+              </span>
+              <img src="${e(sel.feature.img)}" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-bottom:1px solid var(--line)">
+              <figcaption style="padding:.75rem .8rem .9rem;display:flex;flex-direction:column;gap:.4rem;flex:1">
+                <span style="font-family:var(--f-d);font-size:1.02rem;line-height:1.2">${e(sel.feature.title)}</span>
+                <span style="font-family:var(--f-m);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--fnt)">${e(sel.feature.date)}</span>
+                <span style="color:var(--mut);font-size:.8rem;line-height:1.55;font-style:italic">${e(sel.feature.quote)}</span>
+              </figcaption>
+            </figure>` : ''}
           </div>
           <div data-cols style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:1.8rem">
             <div style="background:var(--bg2);padding:1.2rem 1.2rem 1.4rem">
@@ -226,6 +278,7 @@
 
 const PROJECTS = [
   { num:"01", title:"MathFlow", kind:"FBLA Website Design", year:"2026",
+    role:"Lead Developer", badges:[{icon:"web",label:"Live website"}],
     blurb:"An AI math coach that finds a student's weak spots and rebuilds them with guided, step-by-step practice.",
     img:"img/mathflow.png",
     slot:"bcs-mathflow", slotHint:"Drop a MathFlow screenshot",
@@ -235,6 +288,7 @@ const PROJECTS = [
     stack:["Google Gemini","JavaScript","Tailwind","HTML"],
     links:[{label:"Live demo",href:"https://aakarshkwebsitedesign.wasmer.app/"},{label:"GitHub",href:"https://github.com/aakarshkachalia/WebsiteDesignFBLA25-26"}] },
   { num:"02", title:"FTC Scouting Companion", kind:"Native iOS · App Store", year:"2025-26",
+    role:"Lead Developer", badges:[{icon:"apple",label:"App Store"}],
     blurb:"The unofficial FTC scouting app, with match data, team analytics, and offline-first storage in a clean SwiftUI interface, shipped to the App Store.",
     img:"img/tundrascout.png", fit:"contain",
     slot:"bcs-tundrascout", slotHint:"Drop a TundraScout screenshot",
@@ -244,6 +298,7 @@ const PROJECTS = [
     stack:["SwiftUI","Core Data","iOS"],
     links:[{label:"App Store",href:"https://apps.apple.com/us/app/ftc-scouting-companion/id6754262563"}] },
   { num:"03", title:"AI Carbon Footprint Tracker", kind:"Research · NYAS", year:"2025-26",
+    role:"Lead Programmer & Designer", badges:[{icon:"atom",label:"NYAS"}],
     blurb:"A tool that quantifies the energy and emissions cost of AI workloads, grounded in peer-reviewed data.",
     img:"img/carbon.png", fit:"contain",
     slot:"bcs-carbon", slotHint:"Drop a dashboard screenshot",
@@ -254,6 +309,7 @@ const PROJECTS = [
     links:[{label:"Live demo",href:"https://nyas-ai-carbon-tracker.wasmer.app/"},
            {label:"GitHub",href:"https://github.com/aakarshkachalia/NYAS-AI-Carbon-Tracker"}] },
   { num:"04", title:"AI for Young Minds", kind:"Podcast · Spotify & Apple", year:"2025-26",
+    role:"Host", badges:[{icon:"mic",label:"Spotify"},{icon:"mic",label:"Apple Podcasts"}],
     blurb:"A podcast making AI literacy real for middle and high schoolers, on Spotify and Apple Podcasts.",
     img:"img/podcast.png", fit:"contain",
     slot:"bcs-podcast", slotHint:"Drop cover art or a waveform",
@@ -263,6 +319,7 @@ const PROJECTS = [
     stack:["Writing","Audio production","AI literacy"],
     links:[{label:"Spotify",href:"https://open.spotify.com/show/4VxIQAWIUq30C2uyIKbxgs"},{label:"Apple Podcasts",href:"https://podcasts.apple.com/us/podcast/ai-for-young-minds/id1805390678"}] },
   { num:"05", title:"Agentic trading research", kind:"NC State · AI in finance", year:"2026",
+    role:"Researcher", badges:[{icon:"trophy",label:"Winner 2026",win:true},{icon:"chart",label:"Alpaca"},{icon:"llama",label:"Ollama"}],
     blurb:"A multi-agent trading model built with a professor at NC State, running on Alpaca and Ollama. Winner of the AI in Finance track.",
     img:"img/trading.png", fit:"contain",
     slot:"bcs-stock", slotHint:"Drop a results chart",
@@ -272,22 +329,29 @@ const PROJECTS = [
     stack:["Ollama","Alpaca API","scikit-learn","pandas","Python"],
     links:[{label:"GitHub",href:"https://github.com/aakarshkachalia/Machine-Learning-Projects/blob/main/Copy_of_Agentic_Stock_Trading_SP500_Ollama_Portfolio_Activation%20(2).ipynb"}] },
   { num:"06", title:"Competition robots", kind:"FLL · VEX IQ · FTC 7083", year:"2018 to 2026",
+    role:"Chief Engineer", badges:[{icon:"gear",label:"FIRST"},{icon:"gear",label:"VEX"}],
     blurb:"Eight years of competition robotics, from FIRST LEGO League through VEX IQ to three seasons of FTC: mechanical design, Java and Python control code, and systems thinking.",
+    img:"img/robots.jpg", fit:"cover",
     slot:"bcs-robots", slotHint:"Drop a robot photo",
     problem:"Every FTC season is a new game with a fixed six-week build window and a robot that has to survive being driven by humans under pressure.",
     approach:"Started in FIRST LEGO League on a Mindstorms EV3, moved up through VEX IQ, and joined Team 7083 TundraBots for FTC in 2023. Three FTC seasons of mechanical design iterations, autonomous and tele-op control code in Java and Python, and the documentation discipline judges actually read.",
     outcome:"Five Inspire Awards for the team, FTC's highest all-around honor, given for excellence across engineering, documentation, and outreach. We also take winning alliance awards consistently, season after season.",
     stack:["Java","Python","FTC SDK"], links:[] },
   { num:"07", title:"Kinematyx", kind:"macOS · App Store", year:"2026",
+    role:"Lead Developer", badges:[{icon:"apple",label:"App Store"}],
     blurb:"A simulator that models a six-degree-of-freedom robotic arm, so you can drive a real industrial arm without owning one. Shipped to the App Store.",
     img:"img/arm.png", fit:"contain",
     slot:"bcs-arm", slotHint:"Drop a simulator screenshot",
     problem:"A six-axis industrial arm costs more than most schools will ever spend, so the students most curious about robotics never get to touch the thing they want to learn. And the hard part isn't the hardware. It's the inverse kinematics, which you can absolutely learn on a screen.",
     approach:"A model of a 6DOF arm with a full inverse-kinematics solver: set a target position and orientation for the end effector and the simulator works backward to the joint angles, showing the arm move through the solution rather than just reporting numbers.",
     outcome:"Published to the App Store as sole developer, my second shipped app. Used by students to learn arm kinematics without hardware, and by industry-minded users to mock up a real arm's reach and motion before committing to it.",
-    stack:["Python","Inverse kinematics","3D modeling"],
+    stack:["SwiftUI","Inverse kinematics","3D modeling"],
+    feature:{ img:"img/c2c-feature.jpg", source:"Code2College", date:"July 27, 2026",
+      title:"Student Spotlight: Building Beyond the Course",
+      quote:"He wanted a robotic arm kit to experiment with, but every kit he found was expensive or underpowered, so he built his own." },
     links:[{label:"App Store",href:"https://apps.apple.com/us/app/kinematyx/id6790924520?mt=12"}] },
   { num:"08", title:"SolveFire", kind:"Frontend · UI/UX design", year:"2026",
+    role:"Frontend Designer", badges:[{icon:"flame",label:"SolveFire"}],
     blurb:"Designing the interface for a competitive math platform that ships new features constantly.",
     img:"img/solvefire.png", fit:"contain",
     slot:"bcs-solvefire", slotHint:"Drop a UI screenshot",
