@@ -427,7 +427,11 @@ class Component extends DCLogic {
         el.style.transform = "translateY(20px)";
         el.style.transition = "opacity .85s cubic-bezier(.16,1,.3,1), transform .85s cubic-bezier(.16,1,.3,1)";
       });
-      const show = el => { el.style.opacity = "1"; el.style.transform = "none"; };
+      const show = el => {
+        if (el.__shown) return; el.__shown = true;
+        el.style.opacity = "1"; el.style.transform = "none";
+        this.triggerChildAnime(el);
+      };
       const io = new IntersectionObserver(es => {
         es.forEach(e => { if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } });
       }, { threshold: .06, rootMargin: "0px 0px -5% 0px" });
@@ -441,6 +445,86 @@ class Component extends DCLogic {
       const o = new IntersectionObserver(e => { if (e[0].isIntersecting) fill(); }, { threshold: .12 });
       o.observe(tlBox);
       setTimeout(fill, 2500);
+    }
+  }
+
+  triggerChildAnime(el) {
+    if (!window.anime || this.reduced) return;
+    const { animate, set, stagger } = window.anime;
+
+    // Project grid cards
+    if (el.matches('[data-projects]')) {
+      const cards = Array.from(el.querySelectorAll(':scope > [data-open]'));
+      if (!cards.length) return;
+      set(cards, { opacity: 0, translateY: 24, scale: 0.97 });
+      animate(cards, {
+        opacity: 1, translateY: 0, scale: 1,
+        duration: 700, ease: 'outQuart',
+        delay: stagger(55, { start: 60 })
+      });
+      return;
+    }
+
+    // Awards rows — slide in from left
+    const awards = Array.from(el.querySelectorAll(':scope > [data-award]'));
+    if (awards.length) {
+      set(awards, { opacity: 0, translateX: -26 });
+      animate(awards, {
+        opacity: 1, translateX: 0,
+        duration: 620, ease: 'outQuart',
+        delay: stagger(38, { start: 80 })
+      });
+      return;
+    }
+
+    // Skills grid cells — scale + lift in
+    if (el.hasAttribute('data-cols') && el.closest('#skills')) {
+      const cells = Array.from(el.children);
+      set(cells, { opacity: 0, scale: 0.94, translateY: 18 });
+      animate(cells, {
+        opacity: 1, scale: 1, translateY: 0,
+        duration: 720, ease: 'outBack(1.2)',
+        delay: stagger(85, { start: 80 })
+      });
+      return;
+    }
+
+    // Certifications cards — spring pop from below
+    if (el.hasAttribute('data-cols') && el.closest('#certifications')) {
+      const cards = Array.from(el.children);
+      set(cards, { opacity: 0, translateY: 34, scale: 0.96 });
+      animate(cards, {
+        opacity: 1, translateY: 0, scale: 1,
+        duration: 900, ease: 'outBack(1.15)',
+        delay: stagger(170, { start: 100 })
+      });
+      return;
+    }
+
+    // Experience items — fade up
+    const expItems = Array.from(el.querySelectorAll(':scope > [data-exp]'));
+    if (expItems.length) {
+      set(expItems, { opacity: 0, translateY: 22 });
+      animate(expItems, {
+        opacity: 1, translateY: 0,
+        duration: 660, ease: 'outQuart',
+        delay: stagger(72, { start: 80 })
+      });
+      return;
+    }
+
+    // Contact form fields — stagger up
+    if (el.matches('[data-form]')) {
+      const groups = [
+        ...Array.from(el.querySelectorAll(':scope > div')),
+        el.querySelector('[data-submit]')
+      ].filter(Boolean);
+      set(groups, { opacity: 0, translateY: 14 });
+      animate(groups, {
+        opacity: 1, translateY: 0,
+        duration: 520, ease: 'outQuart',
+        delay: stagger(58, { start: 80 })
+      });
     }
   }
 
