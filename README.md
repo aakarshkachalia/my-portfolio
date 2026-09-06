@@ -26,15 +26,6 @@ This site auto-deploys through Cloudflare's GitHub integration — pushes to `ma
 - `aakarshkachalia.com`
 - `www.aakarshkachalia.com`
 
-## Local Development
-
-```bash
-git clone https://github.com/aakarshkachalia/my-portfolio.git
-cd my-portfolio
-# open index.html in your browser, or serve locally:
-npx serve .
-```
-
 ## Structure
 
 
