@@ -171,7 +171,7 @@
   /* ---------- templates ---------- */
   function cardHTML(p, k){ return `            <button type="button" data-open="${k}" style="display:flex;flex-direction:column;align-items:stretch;text-align:left;background:var(--bg2);padding:1.6rem 1.5rem 1.4rem;min-height:310px;transition:background .3s,transform .35s cubic-bezier(.16,1,.3,1)" style-hover="background:var(--bg3);transform:translateY(-3px)">
               <span style="display:flex;justify-content:space-between;align-items:baseline;gap:1rem;font-family:var(--f-m);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--fnt);padding-bottom:1rem;border-bottom:1px solid var(--line2)">
-                <span style="color:var(--acc)">${e(p.num)} / ${e(p.kind)}</span><span>${e(p.year)}</span>
+                <span style="display:flex;align-items:center;gap:.5rem;color:var(--acc)">${p.logo ? `<img src="img/logos/${e(p.logo)}.png" alt="" width="30" height="30" style="width:30px;height:30px;border-radius:6px;background:#fff;padding:3px;object-fit:contain;flex-shrink:0" loading="lazy" />` : ''}${e(p.num)} / ${e(p.kind)}</span><span>${e(p.year)}</span>
               </span>
               <span style="display:block;font-family:var(--f-d);font-size:clamp(1.6rem,2.6vw,2.15rem);letter-spacing:-.02em;line-height:1.08;margin-top:1.1rem">${e(p.title)}</span>
               <span style="display:block;font-family:var(--f-m);font-weight:600;font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--acc);margin-top:.55rem">${e(p.role)}</span>
@@ -185,7 +185,7 @@
       <button type="button" aria-label="Close case study" data-close style="position:fixed;inset:0;background:rgba(10,10,14,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);cursor:none"></button>
       <div role="dialog" aria-modal="true" style="position:relative;width:min(920px,100%);background:var(--bg2);border:1px solid var(--line);border-radius:5px;box-shadow:var(--sh);animation:fadeUp .45s cubic-bezier(.16,1,.3,1) forwards">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem clamp(1.2rem,3vw,2rem);border-bottom:1px solid var(--line)">
-          <span style="font-family:var(--f-m);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--acc)">${e(sel.num)} / ${e(sel.kind)} / ${e(sel.year)}</span>
+          <span style="display:flex;align-items:center;gap:.6rem;font-family:var(--f-m);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc)">${sel.logo ? `<img src="img/logos/${e(sel.logo)}.png" alt="" width="34" height="34" style="width:34px;height:34px;border-radius:7px;background:#fff;padding:4px;object-fit:contain;flex-shrink:0" />` : ''}${e(sel.num)} / ${e(sel.kind)} / ${e(sel.year)}</span>
           <button type="button" data-close style="font-family:var(--f-m);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);border:1px solid var(--line);border-radius:3px;padding:.4rem .8rem;transition:border-color .25s,color .25s" style-hover="border-color:var(--acc);color:var(--ink)">Close ✕</button>
         </div>
         <div style="padding:clamp(1.4rem,3vw,2.4rem) clamp(1.2rem,3vw,2rem) 2.6rem">
@@ -277,7 +277,7 @@
 })();
 
 const PROJECTS = [
-  { num:"01", title:"MathFlow", kind:"FBLA Website Design", year:"2026",
+  { num:"01", logo:"fbla", title:"MathFlow", kind:"FBLA Website Design", year:"2026",
     role:"Lead Developer", badges:[{icon:"web",label:"Live website"}],
     blurb:"An AI math coach that finds a student's weak spots and rebuilds them with guided, step-by-step practice.",
     img:"img/mathflow.png",
@@ -287,7 +287,7 @@ const PROJECTS = [
     outcome:"Carried a full competition package, including the site, documentation, and live demo, to a top-10 finish at FBLA North Carolina states, against a field of 1,000+ students.",
     stack:["Google Gemini","JavaScript","Tailwind","HTML"],
     links:[{label:"Live demo",href:"https://aakarshkwebsitedesign.wasmer.app/"},{label:"GitHub",href:"https://github.com/aakarshkachalia/WebsiteDesignFBLA25-26"}] },
-  { num:"02", title:"FTC Scouting Companion", kind:"Native iOS · App Store", year:"2025-26",
+  { num:"02", logo:"first-tech-challenge", title:"FTC Scouting Companion", kind:"Native iOS · App Store", year:"2025-26",
     role:"Lead Developer", badges:[{icon:"apple",label:"App Store"}],
     blurb:"The unofficial FTC scouting app, with match data, team analytics, and offline-first storage in a clean SwiftUI interface, shipped to the App Store.",
     img:"img/tundrascout.png", fit:"contain",
@@ -297,7 +297,7 @@ const PROJECTS = [
     outcome:"Designed, built, and published to the App Store as sole developer, then marketed it to other FTC teams as an unofficial scouting tool. Now on a yearly release cycle, where each season's feedback becomes the next version's features.",
     stack:["SwiftUI","Core Data","iOS"],
     links:[{label:"App Store",href:"https://apps.apple.com/us/app/ftc-scouting-companion/id6754262563"}] },
-  { num:"03", title:"AI Carbon Footprint Tracker", kind:"Research · NYAS", year:"2025-26",
+  { num:"03", logo:"nyas", title:"AI Carbon Footprint Tracker", kind:"Research · NYAS", year:"2025-26",
     role:"Lead Programmer & Designer", badges:[{icon:"atom",label:"NYAS"}],
     blurb:"A tool that quantifies the energy and emissions cost of AI workloads, grounded in peer-reviewed data.",
     img:"img/carbon.png", fit:"contain",
@@ -318,7 +318,7 @@ const PROJECTS = [
     outcome:"Published on both Spotify and Apple Podcasts, building AI literacy and genuine interest in the field among students who'd otherwise only meet AI as a homework shortcut.",
     stack:["Writing","Audio production","AI literacy"],
     links:[{label:"Spotify",href:"https://open.spotify.com/show/4VxIQAWIUq30C2uyIKbxgs"},{label:"Apple Podcasts",href:"https://podcasts.apple.com/us/podcast/ai-for-young-minds/id1805390678"}] },
-  { num:"05", title:"Agentic trading research", kind:"NC State · AI in finance", year:"2026",
+  { num:"05", logo:"ncstate", title:"Agentic trading research", kind:"NC State · AI in finance", year:"2026",
     role:"Researcher", badges:[{icon:"trophy",label:"Winner 2026",win:true},{icon:"chart",label:"Alpaca"},{icon:"llama",label:"Ollama"}],
     blurb:"A multi-agent trading model built with a professor at NC State, running on Alpaca and Ollama. Winner of the AI in Finance track.",
     img:"img/trading.png", fit:"contain",
@@ -328,7 +328,7 @@ const PROJECTS = [
     outcome:"Won the AI in Finance track of the NC State Research High School Program. The agents trade on paper against real market data, and the early agreeability finding is the uncomfortable one: framing moves the model's read of an overshoot more than the underlying numbers do. The next stage goes deeper into how LLMs reason under that kind of pressure.",
     stack:["Ollama","Alpaca API","scikit-learn","pandas","Python"],
     links:[{label:"GitHub",href:"https://github.com/aakarshkachalia/Machine-Learning-Projects/blob/main/Copy_of_Agentic_Stock_Trading_SP500_Ollama_Portfolio_Activation%20(2).ipynb"}] },
-  { num:"06", title:"Competition robots", kind:"FLL · VEX IQ · FTC 7083", year:"2018 to 2026",
+  { num:"06", logo:"first-tech-challenge", title:"Competition robots", kind:"FLL · VEX IQ · FTC 7083", year:"2018 to 2026",
     role:"Chief Engineer", badges:[{icon:"gear",label:"FIRST"},{icon:"gear",label:"VEX"}],
     blurb:"Eight years of competition robotics, from FIRST LEGO League through VEX IQ to three seasons of FTC: mechanical design, Java and Python control code, and systems thinking.",
     img:"img/robots.jpg", fit:"cover",
