@@ -1,0 +1,25 @@
+# Files and directories Wrangler should not upload as static assets.
+# Uses .gitignore-style syntax, relative to the assets directory (repo root).
+
+# Dependencies — workerd's binary alone is ~148 MB, far over Cloudflare's 25 MiB per-asset limit
+node_modules
+package.json
+package-lock.json
+
+# Version control and tooling state
+.git
+.gitignore
+.wrangler
+
+# Wrangler's own config
+wrangler.jsonc
+.assetsignore
+
+# Local editor/agent config — not for public serving
+.claude
+
+# Docs
+README.md
+
+# OS cruft
+.DS_Store
