@@ -31,7 +31,8 @@
       <li><a href="#about" style="font-family:var(--f-m);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--mut)" style-hover="color:var(--acc)">02 About</a></li>
       <li><a href="#awards" style="font-family:var(--f-m);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--mut)" style-hover="color:var(--acc)">03 Awards</a></li>
       <li><a href="#experience" style="font-family:var(--f-m);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--mut)" style-hover="color:var(--acc)">04 Experience</a></li>
-      <li><a href="#certifications" style="font-family:var(--f-m);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--mut)" style-hover="color:var(--acc)">05 Certs</a></li>
+      <li><a href="#writing" style="font-family:var(--f-m);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--mut)" style-hover="color:var(--acc)">05 Writing</a></li>
+      <li><a href="#certifications" style="font-family:var(--f-m);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--mut)" style-hover="color:var(--acc)">06 Certs</a></li>
     </ul>
     <div style="display:flex;align-items:center;gap:.5rem;white-space:nowrap">
       <button data-theme-btn type="button" aria-label="Toggle colour theme" style="width:34px;height:34px;border-radius:3px;border:1px solid var(--line);background:var(--surf);display:grid;place-items:center;transition:background .2s,border-color .2s" style-hover="background:var(--surf2);border-color:var(--acc)">
@@ -669,10 +670,67 @@
       </div>
     </section>
 
-    <section id="certifications" style="padding-block:clamp(4rem,8vw,7.5rem);scroll-margin-top:76px;border-top:1px solid var(--line);background:var(--bg)">
+    <section id="writing" style="padding-block:clamp(4rem,8vw,7.5rem);scroll-margin-top:76px;border-top:1px solid var(--line);background:var(--bg)">
+      <div style="max-width:1300px;margin-inline:auto;padding-inline:clamp(1.1rem,4vw,2.2rem)">
+        <div data-rev style="display:flex;justify-content:space-between;align-items:end;gap:2rem;flex-wrap:wrap;padding-bottom:1.4rem;border-bottom:1px solid var(--ink);margin-bottom:2.4rem">
+          <div>
+            <span style="font-family:var(--f-m);font-size:.68rem;letter-spacing:.17em;text-transform:uppercase;color:var(--fnt)">08 / Writing</span>
+            <h2 style="font-family:var(--f-d);font-size:clamp(2.4rem,5.6vw,4.6rem);margin-top:.7rem;letter-spacing:-.025em">Showing the <span style="font-style:italic;color:var(--acc)">work</span>.</h2>
+          </div>
+          <p style="font-family:var(--f-m);font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--fnt)">Essays on what the results actually say</p>
+        </div>
+
+        <div data-rev data-writing style="border:1px solid var(--line);background:var(--bg2);transition:background .3s,border-color .3s" style-hover="background:var(--bg3);border-color:var(--acc)">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;font-family:var(--f-m);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--fnt);padding:1.2rem clamp(1.3rem,3vw,2rem);border-bottom:1px solid var(--line2)">
+            <span style="color:var(--acc)">Medium &middot; Independent research</span>
+            <span>6 min read &middot; Aug 21, 2026</span>
+          </div>
+
+          <div data-cols style="display:grid;grid-template-columns:1.35fr .65fr;gap:clamp(1.6rem,4vw,3rem);padding:clamp(1.5rem,3.5vw,2.4rem) clamp(1.3rem,3vw,2rem) clamp(1.8rem,3.5vw,2.4rem)">
+            <div>
+              <h3 style="font-family:var(--f-d);font-size:clamp(1.9rem,3.4vw,2.9rem);letter-spacing:-.025em;line-height:1.06;max-width:24ch">I Tried to Catch AI Chatbots Herding the Stock Market</h3>
+              <p style="color:var(--mut);font-size:1rem;line-height:1.75;margin-top:1rem;max-width:60ch;text-wrap:pretty">An attempt to measure whether ChatGPT-style agreement predicts market overreaction &mdash; and why the honest answer is &ldquo;maybe, barely.&rdquo;</p>
+              <p style="color:var(--mut);font-size:.92rem;line-height:1.75;margin-top:1rem;max-width:62ch;text-wrap:pretty">If enough people ask an AI the same question about the same stock, they get the same answer &mdash; and a herd forms without anyone coordinating. I built a <em style="font-style:italic;color:var(--ink)">shadow-panel agreement score</em> to quantify it: poll a model twenty times on one piece of news, measure how often it says the same thing, then check whether high agreement precedes the overshoot-and-revert signature herds leave behind. The first pilot returned a clean null. The second, on 1,346 real news events, moved every comparison in the same direction and landed at p = 0.054 &mdash; a hair outside significance, and reported that way on purpose.</p>
+
+              <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.4rem">
+                <span style="font-family:var(--f-m);font-size:.64rem;padding:.28rem .7rem;border-radius:3px;border:1px solid var(--line);color:var(--mut)">LLM behaviour</span>
+                <span style="font-family:var(--f-m);font-size:.64rem;padding:.28rem .7rem;border-radius:3px;border:1px solid var(--line);color:var(--mut)">Market microstructure</span>
+                <span style="font-family:var(--f-m);font-size:.64rem;padding:.28rem .7rem;border-radius:3px;border:1px solid var(--line);color:var(--mut)">Ollama</span>
+                <span style="font-family:var(--f-m);font-size:.64rem;padding:.28rem .7rem;border-radius:3px;border:1px solid var(--line);color:var(--mut)">Alpaca API</span>
+                <span style="font-family:var(--f-m);font-size:.64rem;padding:.28rem .7rem;border-radius:3px;border:1px solid var(--line);color:var(--mut)">Statistics</span>
+              </div>
+
+              <a href="https://medium.com/@aakarsh.kachalia10/i-tried-to-catch-ai-chatbots-herding-the-stock-market-heres-what-actually-happened-b7eee30fd9c4" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.6rem;margin-top:1.7rem;padding:.85rem 1.5rem;border-radius:3px;background:var(--ink);color:var(--bg);font-family:var(--f-m);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;transition:transform .3s cubic-bezier(.34,1.56,.64,1)" style-hover="transform:translateY(-2px);color:var(--bg)">Read the essay <span aria-hidden="true">&#8599;</span></a>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);align-content:start;align-self:start">
+              <div style="background:var(--bg2);padding:1.1rem 1.2rem">
+                <div style="font-family:var(--f-d);font-size:clamp(1.7rem,2.6vw,2.2rem);line-height:1">1,346</div>
+                <div style="font-family:var(--f-m);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--fnt);margin-top:.35rem">News events tested</div>
+              </div>
+              <div style="background:var(--bg2);padding:1.1rem 1.2rem">
+                <div style="font-family:var(--f-d);font-size:clamp(1.7rem,2.6vw,2.2rem);line-height:1">20</div>
+                <div style="font-family:var(--f-m);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--fnt);margin-top:.35rem">Model calls per event</div>
+              </div>
+              <div style="background:var(--bg2);padding:1.1rem 1.2rem">
+                <div style="font-family:var(--f-d);font-size:clamp(1.7rem,2.6vw,2.2rem);line-height:1">0.054</div>
+                <div style="font-family:var(--f-m);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--fnt);margin-top:.35rem">p-value, main test</div>
+              </div>
+              <div style="background:var(--bg2);padding:1.1rem 1.2rem">
+                <div style="font-family:var(--f-m);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--sig);line-height:1.6">Walk-forward tested<br />Pre-registered thresholds<br />Three robustness checks</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p data-rev style="color:var(--mut);max-width:70ch;line-height:1.8;text-wrap:pretty;margin-top:1.6rem">This is the write-up of the follow-on work to the agentic trading research above. It is being scaled up &mdash; more tickers, a longer horizon, a second model in parallel &mdash; and documented for student research publication.</p>
+      </div>
+    </section>
+
+    <section id="certifications" style="padding-block:clamp(4rem,8vw,7.5rem);scroll-margin-top:76px;border-top:1px solid var(--line);background:var(--bg2)">
       <div style="max-width:1300px;margin-inline:auto;padding-inline:clamp(1.1rem,4vw,2.2rem)">
         <div data-rev style="padding-bottom:1.4rem;border-bottom:1px solid var(--ink);margin-bottom:2.4rem">
-          <span style="font-family:var(--f-m);font-size:.68rem;letter-spacing:.17em;text-transform:uppercase;color:var(--fnt)">08 / Certifications</span>
+          <span style="font-family:var(--f-m);font-size:.68rem;letter-spacing:.17em;text-transform:uppercase;color:var(--fnt)">09 / Certifications</span>
           <h2 style="font-family:var(--f-d);font-size:clamp(2.4rem,5.6vw,4.6rem);margin-top:.7rem;letter-spacing:-.025em">Formally <span style="font-style:italic;color:var(--acc)">verified</span>.</h2>
         </div>
         <div data-rev data-cols style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)">
@@ -734,7 +792,7 @@
       <div style="max-width:1300px;margin-inline:auto;padding-inline:clamp(1.1rem,4vw,2.2rem)">
         <div data-cols style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,4.5rem);align-items:start">
           <div data-rev>
-            <span style="font-family:var(--f-m);font-size:.68rem;letter-spacing:.17em;text-transform:uppercase;color:var(--fnt)">09 / Contact</span>
+            <span style="font-family:var(--f-m);font-size:.68rem;letter-spacing:.17em;text-transform:uppercase;color:var(--fnt)">10 / Contact</span>
             <h2 style="font-family:var(--f-d);font-size:clamp(2.4rem,5.4vw,4.2rem);margin-top:.7rem;letter-spacing:-.025em">Let's build <span style="font-style:italic;color:var(--acc)">something</span>.</h2>
             <p style="color:var(--mut);font-size:clamp(1rem,1.4vw,1.15rem);margin-top:1rem;max-width:44ch;line-height:1.7">A project, a research idea, an opportunity: I'm always up for a good problem. Reach out and I'll get back to you.</p>
             <div style="border:1px solid var(--line);border-radius:4px;margin-top:1.8rem;background:var(--bg2);max-width:420px">
@@ -794,6 +852,7 @@
         <li><a href="#work" style="font-family:var(--f-m);font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--mut)">Work</a></li>
         <li><a href="#about" style="font-family:var(--f-m);font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--mut)">About</a></li>
         <li><a href="#awards" style="font-family:var(--f-m);font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--mut)">Awards</a></li>
+        <li><a href="#writing" style="font-family:var(--f-m);font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--mut)">Writing</a></li>
         <li><a href="#certifications" style="font-family:var(--f-m);font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--mut)">Certs</a></li>
         <li><a href="#contact" style="font-family:var(--f-m);font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;color:var(--mut)">Contact</a></li>
       </ul>

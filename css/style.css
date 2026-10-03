@@ -59,8 +59,8 @@ body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;o
 @media (max-width:900px) and (min-width:600px){
   [data-cols][data-rev]{grid-template-columns:repeat(2,1fr) !important}
 }
-/* the nav's section links don't fit on a phone — the footer carries them there */
-@media (max-width:760px){
+/* the nav's section links stop fitting once the viewport narrows — the footer carries them there */
+@media (max-width:1080px){
   nav[data-nav] > ul{display:none !important}
 }
 

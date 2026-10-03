@@ -501,6 +501,20 @@ class Component extends DCLogic {
       return;
     }
 
+    // Writing card — lift in, then its inner blocks settle
+    if (el.hasAttribute('data-writing')) {
+      const parts = Array.from(el.querySelectorAll(':scope > div'));
+      set(el, { opacity: 0, translateY: 26 });
+      animate(el, { opacity: 1, translateY: 0, duration: 760, ease: 'outQuart' });
+      set(parts, { opacity: 0, translateY: 14 });
+      animate(parts, {
+        opacity: 1, translateY: 0,
+        duration: 620, ease: 'outQuart',
+        delay: stagger(90, { start: 180 })
+      });
+      return;
+    }
+
     // Experience items — fade up
     const expItems = Array.from(el.querySelectorAll(':scope > [data-exp]'));
     if (expItems.length) {
